@@ -14,7 +14,7 @@ class Validator(publisher: ActorRef) extends Actor with Context with ActorLoggin
   var seen: Map[String, Timestamp] = Map[String, Timestamp]()
 
   def valid(url: Url): Boolean = seen.get(url.getUri)
-    .forall(ts => (url.timestamp.getNanos - ts.getNanos) < Settings.Crawler.urlLifeSpan.toNanos)
+    .forall(ts => (url.timestamp.getNanos - ts.getNanos) > Settings.Crawler.urlLifeSpan.toNanos)
 
   def resetSeen(): Unit =
     seen = Map[String, Timestamp]()
@@ -33,7 +33,10 @@ class Validator(publisher: ActorRef) extends Actor with Context with ActorLoggin
     case ResetSeen =>
       resetSeen()
     case url: Url =>
-      if (valid(url)) publisher ! url
+      if (valid(url)) {
+        updateSeen(url.getUri, url.timestamp)
+        publisher ! url
+      }
       sender() ! Ack
     case _ =>
   }
