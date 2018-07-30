@@ -37,6 +37,7 @@ object Settings {
 
   object Solr {
     private val solr: Config = app.getConfig("solr")
+    val collection: String = solr.getString("collection")
     val address: String = solr.getString("address")
     val port: String    = solr.getString("port")
   }

@@ -92,6 +92,9 @@ Create the **policy table**:
 CREATE TABLE cnap.policy (
     id uuid, 
     uri text, 
+    raw_body text, 
+    breadcrumbs text, 
+    body text, 
     depth int, 
     max_depth int, 
     from_url uuid, 

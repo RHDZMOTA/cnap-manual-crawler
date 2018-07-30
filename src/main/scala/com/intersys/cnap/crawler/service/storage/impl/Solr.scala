@@ -10,7 +10,7 @@ import com.intersys.cnap.crawler.util.ClientHttp._
 
 case object Solr extends Storage[CustomResponse, NotUsed] with ClientHttp with Context {
 
-  val uRL: java.net.URL = new java.net.URL(s"http://${Settings.Solr.address}:${Settings.Solr.port}/solr/DESsite/update/extract?commit=true")
+  val uRL: java.net.URL = new java.net.URL(s"http://${Settings.Solr.address}:${Settings.Solr.port}/solr/${Settings.Solr.collection}/update")
 
   override def sink: Sink[CustomResponse, NotUsed] =
     Flow[CustomResponse].mapAsync[(String, Option[HttpResponse])](20)(

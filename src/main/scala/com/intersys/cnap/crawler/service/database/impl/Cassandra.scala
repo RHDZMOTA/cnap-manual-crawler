@@ -24,8 +24,8 @@ case object Cassandra extends Database[CustomResponse, NotUsed] with Context {
 
   private val query: String =
     s"""
-       |INSERT INTO ${Settings.Cassandra.keyspaceName}.${Settings.Cassandra.urlTable}(id, uri, depth, max_depth, from_url, crawl_job, timestamp, body)
-       |VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+       |INSERT INTO ${Settings.Cassandra.keyspaceName}.${Settings.Cassandra.urlTable}(id, uri, depth, max_depth, from_url, crawl_job, timestamp, raw_body, body, breadcrumbs)
+       |VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      """.stripMargin
 
   private val preparedStatement: PreparedStatement = session.prepare(query)
@@ -33,14 +33,23 @@ case object Cassandra extends Database[CustomResponse, NotUsed] with Context {
   private val statementBinder: (CustomResponse, PreparedStatement) => BoundStatement =
     (customResponse: CustomResponse, statement: PreparedStatement) => {
       val url = customResponse.url
+      val rawBody: String = customResponse.content match {
+        case None => ""
+        case Some(resp) => resp.map(_.toChar).mkString
+      }
       val body: String = customResponse.content match {
         case None => ""
         case Some(resp) => browser.parseString(
-          browser.parseString(resp.map(_.toChar).mkString) >> allText("#page_content")) >> allText
+          browser.parseString(rawBody) >> allText("#page_content")) >> allText
+      }
+      val breadcrumbs: String = customResponse.content match {
+        case None => ""
+        case Some(resp) => browser.parseString(
+          browser.parseString(rawBody) >> allText(".ww_skin_breadcrumbs")) >> allText
       }
       statement.bind(
         url.id, url.getUri, url.depth.asInstanceOf[java.lang.Integer], url.maxDepth.asInstanceOf[java.lang.Integer],
-        url.from, url.crawlJob, url.timestamp, body)
+        url.from, url.crawlJob, url.timestamp, rawBody, body, breadcrumbs)
     }
 
   val cassandraSink: Sink[CustomResponse, Future[Done]] = CassandraSink[CustomResponse](
