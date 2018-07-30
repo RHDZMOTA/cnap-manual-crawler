@@ -5,7 +5,7 @@ import akka.stream.ClosedShape
 import akka.stream.scaladsl.GraphDSL.Builder
 import akka.stream.scaladsl.{Broadcast, GraphDSL, RunnableGraph, Source}
 import com.intersys.cnap.crawler.conf.{Context, Settings}
-import com.intersys.cnap.crawler.service.Crawler
+import com.intersys.cnap.crawler.service.crawler.Crawler
 import com.intersys.cnap.crawler.service.database.impl.Cassandra
 import com.intersys.cnap.crawler.service.publish.Publisher
 import com.intersys.cnap.crawler.service.storage.impl.Solr
@@ -21,7 +21,7 @@ object App extends Context {
 
     publisher ! Publisher.InitMessage(procedureRef)
     publisher ! Publisher.Print("Up and running.")
-    publisher ! Url.crawlJob("https://dbmefaapolicy.azdes.gov", Settings.Crawler.depth)
+    publisher ! Url.crawlJob(Settings.Crawler.seedUrl, Settings.Crawler.depth)
   }
 
   val actorSource: Source[Url, ActorRef] = Source.actorRef[Url](
@@ -44,12 +44,3 @@ object App extends Context {
   }
 
 }
-
-/**
-import com.intersys.cnap.crawler.App.Crawler
-import com.intersys.cnap.crawler.util.ClientHttp
-val seed = ClientHttp.Url.crawlJob("https://dbmefaapolicy.azdes.gov", 100)
-val cr = Crawler.getRequestWithCustomResponse(seed)
-val urls = cr.map(Crawler.extractUrls(_))
-urls.map(_.foreach(x => println(x.getUri)))
-**/

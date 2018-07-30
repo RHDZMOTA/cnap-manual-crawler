@@ -15,6 +15,7 @@ lazy val root = (project in file(".")).
       val configVersion = "1.3.1"
       val solrAlpakkaVersion = "0.20"
       val cassandraAlpakkaVersion = "0.19"
+      val scalaScraperVersion = "2.1.0"
       Seq(
         "org.jsoup" % "jsoup" % jsoupVersion,
         "com.typesafe" % "config" % configVersion,
@@ -23,6 +24,7 @@ lazy val root = (project in file(".")).
         "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
         "com.typesafe.akka" %% "akka-http-core" % akkaHttpVersion,
         "com.lightbend.akka" %% "akka-stream-alpakka-cassandra" % cassandraAlpakkaVersion,
+        "net.ruippeixotog" %% "scala-scraper" % scalaScraperVersion,
         scalaTest % Test
       )
     }

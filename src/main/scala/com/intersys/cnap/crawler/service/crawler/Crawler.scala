@@ -1,4 +1,4 @@
-package com.intersys.cnap.crawler.service
+package com.intersys.cnap.crawler.service.crawler
 
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
