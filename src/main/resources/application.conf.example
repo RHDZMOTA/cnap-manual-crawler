@@ -1,25 +1,25 @@
 application = {
   source = {
-    bufferSize = "10000000"
-    overflowStrategy = "fail"
+    bufferSize = ""
+    overflowStrategy = ""
   }
   crawler = {
-    seedUrl = "https://dbmefaapolicy.azdes.gov"
-    urlLifeSpan = "18000"
-    parallelism = "30"
-    depth = "1000"
+    seedUrl = ""
+    urlLifeSpan = ""
+    parallelism = ""
+    depth = ""
   }
   cassandra = {
-    address = "127.0.0.1"
-    port = "9042"
-    keyspaceName = "cnap"
-    urlTable = "policy"
-    parallelism = "30"
+    address = ""
+    port = ""
+    keyspaceName = ""
+    urlTable = ""
+    parallelism = ""
   }
   solr = {
-    collection = "cnap"
-    address = "10.1.2.78"
-    port = "8983"
-    parallelism = "30"
+    collection = ""
+    address = ""
+    port = ""
+    parallelism = ""
   }
 }
