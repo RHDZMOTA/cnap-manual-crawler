@@ -7,7 +7,7 @@ lazy val root = (project in file(".")).
       scalaVersion := "2.12.6",
       version      := "0.0.0"
     )),
-    name := "cnap-manual-crawler",
+    name := "cnap-policy-crawler",
     libraryDependencies ++= {
       val akkaVersion = "2.5.13"
       val akkaHttpVersion = "10.1.1"

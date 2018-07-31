@@ -30,10 +30,12 @@ class Validator(publisher: ActorRef) extends Actor with Context with ActorLoggin
       sender() ! Ack
     case StreamFailure(ex) =>
       log.warning("Stream failure encounter: " + ex.toString)
+      actorSystem.terminate()
     case ResetSeen =>
       resetSeen()
     case url: Url =>
       if (valid(url)) {
+        println(s"[URL received] ${url.getUri}")
         updateSeen(url.getUri, url.timestamp)
         publisher ! url
       }

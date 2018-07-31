@@ -100,7 +100,6 @@ CREATE TABLE cnap.policy (
     from_url uuid, 
     crawl_job uuid, 
     timestamp timestamp,
-    body text,
     PRIMARY KEY (id, from_url, crawl_job)
 );
 ```

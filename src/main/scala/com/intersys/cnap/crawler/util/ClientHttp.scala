@@ -11,8 +11,6 @@ import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.util.UUID
 
-import akka.http.javadsl.model.HttpEntities
-
 import scala.util.Try
 import scala.concurrent.{ExecutionContext, Future}
 
