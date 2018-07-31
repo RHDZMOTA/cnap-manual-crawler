@@ -21,7 +21,7 @@ object App extends Context {
 
     publisher ! Publisher.InitMessage(procedureRef)
     publisher ! Publisher.Print("Up and running.")
-    publisher ! Url.crawlJob(Settings.Crawler.seedUrl, Settings.Crawler.depth)
+    validator ! Url.crawlJob(Settings.Crawler.seedUrl, Settings.Crawler.depth)
   }
 
   val actorSource: Source[Url, ActorRef] = Source.actorRef[Url](
@@ -33,12 +33,13 @@ object App extends Context {
     GraphDSL.create(actorSource) { implicit builder: Builder[ActorRef] =>
       actorSource =>
         import GraphDSL.Implicits._
-        val broadcastResult = builder.add(Broadcast[CustomResponse](outputPorts = 3))
+        val broadcastResult = builder.add(Broadcast[CustomResponse](outputPorts = 4))
 
         // Runnable graph definition
         actorSource ~> Crawler.download ~>  broadcastResult ~> Crawler.getChildRefs ~> Validator.sink(vref)
                                             broadcastResult ~> Solr.sink
-                                            broadcastResult ~> Cassandra.sink
+                                            broadcastResult ~> Cassandra.UrlTable.sink
+                                            broadcastResult ~> Cassandra.AnswerExtraction.sink
         ClosedShape
     }
   }

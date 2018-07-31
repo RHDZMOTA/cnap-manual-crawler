@@ -12,8 +12,16 @@ object Settings {
     val address: String = cassandra.getString("address")
     val port: Int       = cassandra.getInt("port")
     val keyspaceName: String  = cassandra.getString("keyspaceName")
-    val urlTable: String      = cassandra.getString("urlTable")
-    val parallelism: Int      = cassandra.getInt("parallelism")
+    object Url {
+      val url: Config = cassandra.getConfig("url")
+      val table: String = url.getString("table")
+      val parallelism: Int = url.getInt("parallelism")
+    }
+    object Answer {
+      val answer: Config = cassandra.getConfig("answer")
+      val table: String = answer.getString("table")
+      val parallelism: Int = answer.getInt("parallelism")
+    }
   }
 
   object Crawler {

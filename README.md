@@ -22,7 +22,7 @@ Where:
 
 ## Usage 
 
-###Initial setup
+### Initial setup
 1. Clone the repository: 
     * `git clone https://github.com/rhdzmota/cnap-policy-crawler.git`
 2. Enter the base directory: 
@@ -40,7 +40,7 @@ You can find the configuration file at `src/main/resources/`. The main component
 ```text
 application = {
   source = {
-    bufferSize = ""         // Buffer size of the stream (actor's mailbox: e.g., "1000000"). 
+    bufferSize = ""         // Buffer size of the stream (actor's mailbox: e.g., "5000"). 
     overflowStrategy = ""   // Strategy to perform if bufferSize is reached (i.e., "fail", "dropBuffer", "dropHead", "dropTail")
   }
   crawler = {
@@ -53,8 +53,14 @@ application = {
     address = ""            // Cassandra address (e.g., "127.0.0.1")
     port = ""               // Cassandra port (e.g., "9041")
     keyspaceName = ""       // Cassandra target keyspace (e.g., "cnap")
-    urlTable = ""           // Cassandra target table (e.g., "policy")
-    parallelism = ""        // Cassandra batch insert (e.g., "30")
+    url = {
+        table = ""          // Cassandra target table (i.e., "policy")
+        parallelism = ""    // Cassandra batch insert (e.g., "30")
+    }
+    answer = {
+        table = ""          // Cassandra target table (i.e., "answer")
+        parallelism = ""    // Cassandra batch insert (e.g., "100")
+    }
   }
   solr = {
     address = ""            // Solr address (e.g., "127.0.0.1")
@@ -69,8 +75,8 @@ Recommendations:
 and the storage. 
 * A **parallelism** value of 30 is recommended for both Solr and the Crawler due to limitations with 
 the connection pool. 
-* A Cassandra batch insert (parallelism) value of 30 is recommended in order to match the parallelism 
-value of the Crawler. 
+* A Cassandra batch insert (parallelism) value of 30 is recommended for the url-table in order to match the parallelism 
+value of the Crawler. You can use a larger parallelism level for the answer-table. 
 
 ### Run the application
 1. Enter the base directory.
@@ -101,6 +107,18 @@ CREATE TABLE cnap.policy (
     crawl_job uuid, 
     timestamp timestamp,
     PRIMARY KEY (id, from_url, crawl_job)
+);
+```
+
+Create the **answer table**:
+```text
+CREATE TABLE cnap.answer (
+    id uuid,
+    url uuid,
+    uri text,
+    heading text,
+    text text,
+    PRIMARY KEY (id, url)
 );
 ```
 

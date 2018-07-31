@@ -67,5 +67,5 @@ jrebel.lic
 # paulp script
 /.lib/
 
-application.conf
+#application.conf
 
