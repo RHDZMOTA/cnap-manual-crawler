@@ -24,6 +24,26 @@ object Settings {
     }
   }
 
+  object Postgres {
+    private val postgres: Config = app.getConfig("postgres")
+    val driver: String = "org.postgresql.Driver"
+    val address: String   = postgres.getString("address")
+    val port: String      = postgres.getString("port")
+    val database: String  = postgres.getString("database")
+    val username: String  = postgres.getString("username")
+    val pwd: String        = postgres.getString("pwd")
+    object Url {
+      val url: Config       = postgres.getConfig("url")
+      val table: String     = url.getString("table")
+      val parallelism: Int  = url.getInt("parallelism")
+    }
+    object Answer {
+      val answer: Config    = postgres.getConfig("answer")
+      val table: String     = answer.getString("table")
+      val parallelism: Int  = answer.getInt("parallelism")
+    }
+  }
+
   object Crawler {
     private val crawler: Config = app.getConfig("crawler")
     val parallelism: Int        = crawler.getInt("parallelism")

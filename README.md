@@ -86,6 +86,42 @@ value of the Crawler. You can use a larger parallelism level for the answer-tabl
      
 **Note** that you can find the fat-jar in the `target` directory. 
 
+## PostgreSQL Setup
+
+Create the database.
+```text
+sudo -u postgres createdb cnap
+```
+
+Create the **policy table**:
+```text
+CREATE TABLE policy (
+    id UUID,
+    uri text,
+    depth int, 
+    max_depth int, 
+    from_url uuid, 
+    crawl_job uuid, 
+    timestamp timestamp,
+    raw_body text, 
+    body text, 
+    breadcrumbs text, 
+    PRIMARY KEY (id, from_url, crawl_job)
+);
+```
+
+Create the **answer table**. 
+```text
+CREATE TABLE answer (
+    id uuid,
+    url uuid,
+    uri text,
+    heading text,
+    text text,
+    PRIMARY KEY (id, url)
+);
+```
+
 ## Cassandra Setup
 
 Create the keyspace (example).
