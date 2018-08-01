@@ -71,7 +71,13 @@ case object Cassandra {
     )
 
     override def sink: Sink[CustomResponse, NotUsed] =
-      Flow[CustomResponse].map(customResp => customResp).to(cassandraSink)
+      Flow[CustomResponse].filter(x => x.content match  {
+        case None => false
+        case Some(resp) =>
+          val document = browser.parseString( resp.map(_.toChar).mkString )
+          val heading: String = document >?> text("div[class^=Heading_]") getOrElse ""
+          !heading.toLowerCase.contains("removed")
+      }).to(cassandraSink)
   }
   case object AnswerExtraction extends Database[CustomResponse, NotUsed] {
 
@@ -107,8 +113,7 @@ case object Cassandra {
 
     override def sink: Sink[CustomResponse, NotUsed] =
       Flow[CustomResponse].mapConcat(customResponse => {
-        val document: Option[Document] =
-          customResponse.content.map(r => browser.parseString(r.map(_.toChar).mkString))
+        val document: Option[Document] = customResponse.content.map(r => browser.parseString(r.map(_.toChar).mkString))
         val heading: String = document.flatMap {doc => doc >?> text("div[class^=Heading_]")} getOrElse ""
         val elements: List[Element] = document.map {doc => (doc >> elementList("div"))
             .filter(_.attrs.get("class").exists(classVal => (classVal contains "Body_Text_") || (classVal contains "List_Bullet_")))
