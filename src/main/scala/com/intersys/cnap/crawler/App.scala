@@ -6,7 +6,7 @@ import akka.stream.scaladsl.GraphDSL.Builder
 import akka.stream.scaladsl.{Broadcast, GraphDSL, RunnableGraph, Source}
 import com.intersys.cnap.crawler.conf.{Context, Settings}
 import com.intersys.cnap.crawler.service.crawler.Crawler
-import com.intersys.cnap.crawler.service.database.impl.Cassandra
+import com.intersys.cnap.crawler.service.database.impl.{Cassandra, PostgreSQL}
 import com.intersys.cnap.crawler.service.publish.Publisher
 import com.intersys.cnap.crawler.service.storage.impl.Solr
 import com.intersys.cnap.crawler.service.validation.Validator
@@ -35,11 +35,13 @@ object App extends Context {
         import GraphDSL.Implicits._
         val broadcastResult = builder.add(Broadcast[CustomResponse](outputPorts = 4))
 
+        val database = PostgreSQL
+
         // Runnable graph definition
         actorSource ~> Crawler.download ~>  broadcastResult ~> Crawler.getChildRefs ~> Validator.sink(vref)
                                             broadcastResult ~> Solr.sink
-                                            broadcastResult ~> Cassandra.UrlTable.sink
-                                            broadcastResult ~> Cassandra.AnswerExtraction.sink
+                                            broadcastResult ~> database.UrlTable.sink
+                                            broadcastResult ~> database.AnswerExtraction.sink
         ClosedShape
     }
   }
